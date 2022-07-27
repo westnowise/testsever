@@ -1,0 +1,144 @@
+<!-- <!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'single_post.css' %}">
+    <title>{{ post.title  }} - Blog </title>
+</head>
+
+<body>
+    <div class="Logo">
+        <h1 class="mainTitle"><a href="/" class="mainLogo">멋쟁이 사자처럼 게시판</a></h1>
+    </div>
+
+    <article>
+        <div class="container post">
+            <article class="oneline">
+                <hr/>
+                <h2 class="Title">{{ post.title }}</h2>
+                <div class="details">
+                    <div class="writer">
+                        <p>작성자</a></p>
+                    </div>
+                    <div class="date">
+                        <span class="day">{{ post.created_at }}</span>
+                    </div>
+                </div>
+                <hr/>
+            </article>
+            <p class="content">{{ post.content }}</p>
+        </div>
+    </article>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'single_post.css' %}">   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <title>{{ post.title  }} - Blog </title>
+</head>
+<body>
+    {% load crispy_forms_tags %}
+    <div class = "titleBox">
+        <h1 class="mainTitle"><a href="/" class="mainLogo">멋쟁이 사자처럼 게시판</a></h1>
+    </div>
+
+    <div class = "postBox">
+        <hr/>
+        <div class = "postTitle">
+            <h2>{{ post.title  }}</h2>
+        </div>
+        <hr/>
+        <div class = "postset">
+            <span>작성자:</span>&nbsp<span>임예리</span>&nbsp&nbsp&nbsp&nbsp<span>작성일:</span>&nbsp<span>{{ post.created_at }}</span>
+        </div>
+        <div class = "mainPost">
+            {{ post.content }}
+        </div>
+    </div>
+
+    <div class="comment-area">
+        <!--Comment Form-->
+        <div class="card my-4">
+            <h5 class="card-header"></h5>
+            <div class="card-body">
+                <form id="comment-form" method="POST" action="{{ post.get_absolute_url }}new_comment/">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ comment_form| crispy }}
+                        <!-- <textarea class="form-control" row="3"></textarea> -->
+                    </div>
+                    <button type="submit" class="btn btn-dark">Submit</button>
+                </form>
+            </div>
+        </div>
+        {% if post.comment_set.exists %}
+            {% for comment in post.comment_set.iterator %}
+            <!--Single Comment-->
+            <div class="media mb-4" id="comment-{{ comment.pk }}">
+                <div class="media-body">
+                    <div class="'float-rigt">
+                    <a role=""button" class="btn btn-dark btn-info float-right"
+                    id="comment-{{ comment.pk }}-update-btn"
+                    href="/{{ comment.pk }}/CommentUpdate/">
+                    edit
+                    </a>
+                    <a role="button"
+                        href="/{{ comment.pk }}/delete_comment/"
+                        id="comment-{{ comment.pk }}-delete-model-btn"
+                        class="'btn btn-sm btn-dark"
+                        data-toggle="'model" data-targer="#deleteCommentModal--{{ comment.pk }}">
+                            delete
+                        </a>
+                    </div>
+
+                    <h5 class="'mt-0">{{ comment.author }} &nbsp;&nbsp;<small class="text-muted">{{ comment.created_at }}
+                    </small>
+                </h5>
+                <p>{{ comment.comment_text| linebreaks }}</p>
+                {% if comment.created_at != comment.modified_at %}
+                    <p class="text-muted float-rigt"><small>Updated: {{ comment.modified_at }}</small></p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal fade" id="deleteCommentModal-{{ comment.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+                <div class="modal-content">
+                    <div class="'modal-header">
+                        <h5 class="modal-title" id="deleteModalLable">Are You Sure?</h5>
+                            <button type="button" class="close" data-dimiss="modal" aria-lable="Close">
+                                <span aria-hidden="ture">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <del>{{ comment | linebreaks }}</del>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="'btn btn-dark" data-dimiss="modal">Cancel</button>
+                            <a role="button" class="btn btn-dark" href="/blog/delete_comment/{{ comment.pk }}/">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <hr/>
+    <article class="footerBox">
+        <footer>LikeLion Hanseo Back-End Team</footer>
+    </article>
+
+</body>
+</html>
